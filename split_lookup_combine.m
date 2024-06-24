@@ -1,7 +1,7 @@
 let
     Source = (ListContent as any) => let
         Source = ListContent,
-        #"Split Text" = Text.Split(Source, "|"),
+        #"Split Text" = if Source <> null then Text.Split(Source, "|") else { null },
         #"Converted to Table" = Table.FromList(#"Split Text", Splitter.SplitByNothing(), null, null, ExtraValues.Error),
         #"Changed Type" = Table.TransformColumnTypes(#"Converted to Table",{{"Column1", Int64.Type}}),
         #"Merged Queries" = Table.NestedJoin(#"Changed Type", {"Column1"}, Lookup, {"ID"}, "Lookup", JoinKind.LeftOuter),
