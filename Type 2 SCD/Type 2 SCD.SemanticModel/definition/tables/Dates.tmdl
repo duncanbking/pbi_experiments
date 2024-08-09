@@ -1,0 +1,65 @@
+table Dates
+	lineageTag: ec6e2d45-24a1-4b40-93e8-5bc86b55e080
+
+	column Date
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: d9ae372d-877b-482e-8c8b-2a05299e5e36
+		summarizeBy: none
+		isNameInferred
+		isDataTypeInferred
+		sourceColumn: [Date]
+
+		variation Variation
+			isDefault
+			relationship: d8a3937a-b1c7-48ef-b5f5-253e892d5252
+			defaultHierarchy: LocalDateTable_ca4d9563-fd54-466e-b6c9-75e39cfb060c.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+	column Quarter-Year = Dates[Quarter] & " " & Dates[Year]
+		dataType: string
+		lineageTag: 83b060e8-0b9f-4265-b5d3-beb50e67d146
+		summarizeBy: none
+		isDataTypeInferred
+		sortByColumn: 'Quarter-Year Number'
+
+		annotation SummarizationSetBy = Automatic
+
+	column Quarter = ```
+			"Q" & ROUNDUP(MONTH(Dates[Date])/3,0) 
+			```
+		dataType: string
+		lineageTag: 6e991a23-8ea5-4279-8700-b3477988440c
+		summarizeBy: none
+		isDataTypeInferred
+
+		annotation SummarizationSetBy = Automatic
+
+	column Year = YEAR(Dates[Date])
+		dataType: int64
+		formatString: 0
+		lineageTag: ad4dd729-e328-403f-b16b-c4a915419c19
+		summarizeBy: sum
+		isDataTypeInferred
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Quarter-Year Number' = ```
+			YEAR(Dates[Date]) * 100 + ROUNDUP(MONTH(Dates[Date])/3,0) 
+			```
+		dataType: double
+		lineageTag: c76871ac-bbff-443b-834a-2f5be12d187e
+		summarizeBy: sum
+		isDataTypeInferred
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	partition Dates = calculated
+		mode: import
+		source = CALENDAR("2023-01-01", "2024-12-31")
+
+	annotation PBI_Id = aa527cc7b42b4e7f819f6fb121156156
+

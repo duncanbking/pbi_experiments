@@ -1,0 +1,25 @@
+model Model
+	culture: en-GB
+	defaultPowerBIDataSourceVersion: powerBI_V3
+	sourceQueryCulture: en-GB
+	dataAccessOptions
+		legacyRedirects
+		returnErrorValuesAsNull
+
+annotation __PBI_TimeIntelligenceEnabled = 1
+
+annotation PBIDesktopVersion = 2.130.930.0 (24.06)
+
+annotation PBI_QueryOrder = ["Assets"]
+
+annotation PBI_ProTooling = ["DevMode"]
+
+ref table Dates
+ref table DateTableTemplate_7524e06f-f0f9-428a-84f1-aa8c11cddda0
+ref table LocalDateTable_ca4d9563-fd54-466e-b6c9-75e39cfb060c
+ref table Assets
+ref table LocalDateTable_5c1d33c1-6a0d-41c8-9805-bcaa4592ce96
+ref table LocalDateTable_8def90ec-8ed6-45d1-91ce-cabbcc786e68
+
+ref cultureInfo en-GB
+

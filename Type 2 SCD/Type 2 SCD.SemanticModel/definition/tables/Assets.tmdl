@@ -1,0 +1,151 @@
+table Assets
+	lineageTag: 6119cd52-e2fc-44ad-a2e3-fd0d15da0c89
+
+	measure 'Is Current' =
+			
+			VAR assetId = SELECTEDVALUE(Assets[AssetID])
+			VAR effectiveDate = [Latest Effective Date]
+			RETURN COUNTROWS(FILTER(Assets, AND('Assets'[EffectiveTo] = effectiveDate, Assets[AssetID] = assetId)))
+		formatString: 0
+		lineageTag: 9a5e6be2-4bb8-460f-9f95-4257b8e48f1e
+
+	measure 'Latest Effective Date' =
+			
+			VAR assetId = SELECTEDVALUE(Assets[AssetID])
+			RETURN CALCULATE(MIN(Assets[EffectiveTo]), REMOVEFILTERS(Assets), Assets[AssetID] = assetId, Assets[EffectiveTo] > MAX(Dates[Date]))
+		formatString: Short Date
+		lineageTag: d72cab55-5107-41ab-a2e2-839d2731de1e
+
+	measure 'Latest Available Date' = MAX(Dates[Date])
+		formatString: Short Date
+		lineageTag: 39050b67-aa37-4f97-8c4c-3a0f862f6605
+
+	measure 'Daily Value (Individual Asset)' =
+			IF(
+			    AND(
+			        HASONEVALUE(Dates[Date]),
+			        HASONEVALUE('Assets'[AssetID])
+			    ),
+			    CALCULATE(
+			        SUM('Assets'[Value]),
+			        'Assets'[EffectiveFrom] <= SELECTEDVALUE(Dates[Date]),
+			        'Assets'[EffectiveTo] >= SELECTEDVALUE(Dates[Date])
+			    )
+			)
+		formatString: 0
+		lineageTag: 1c14dc41-98fd-4c36-8bbb-c8929ecff9fa
+
+	measure 'Aggregated Value' = ```
+			SUMX(
+			    SUMMARIZE('Assets', 'Assets'[AssetID]), 
+			    AVERAGEX(
+			        'Dates',
+			        [Daily Value (Individual Asset)]
+			    )
+			)
+			// Daily average per asset, summed across assets
+			```
+		lineageTag: 23c855be-c215-4928-b288-bb2831fb82e2
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column RowID
+		dataType: int64
+		formatString: 0
+		lineageTag: f7b90931-6cd5-4da6-84ff-b3eb170665a6
+		summarizeBy: count
+		sourceColumn: RowID
+
+		annotation SummarizationSetBy = Automatic
+
+	column AssetID
+		dataType: int64
+		formatString: 0
+		lineageTag: c75cd2ea-f92e-4ce5-8296-01e9c135e257
+		summarizeBy: count
+		sourceColumn: AssetID
+
+		annotation SummarizationSetBy = Automatic
+
+	column AssetName
+		dataType: string
+		lineageTag: 9666258e-f607-4f51-b8e1-41b2728f69bc
+		summarizeBy: none
+		sourceColumn: AssetName
+
+		annotation SummarizationSetBy = Automatic
+
+	column AssetCategory
+		dataType: string
+		lineageTag: 74d2610c-480d-422c-b3b0-a2c3cd26211c
+		summarizeBy: none
+		sourceColumn: AssetCategory
+
+		annotation SummarizationSetBy = Automatic
+
+	column EffectiveTo
+		dataType: dateTime
+		formatString: Short Date
+		lineageTag: 7619a1c5-51db-40e8-b123-b53a451b2484
+		summarizeBy: none
+		sourceColumn: EffectiveTo
+
+		variation Variation
+			isDefault
+			relationship: 488d0893-2c51-41a7-a0d5-659bf8813532
+			defaultHierarchy: LocalDateTable_5c1d33c1-6a0d-41c8-9805-bcaa4592ce96.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column EffectiveFrom =
+			
+			VAR assetID = 'Assets'[AssetID]
+			VAR currentEffectiveDate = 'Assets'[EffectiveTo]
+			VAR prevEffectiveDate = MAXX(
+			    FILTER(
+			        'Assets',
+			        AND (
+			            [AssetID] = assetID,
+			            [EffectiveTo] < currentEffectiveDate
+			        )
+			    ),
+			    'Assets'[EffectiveTo]
+			)
+			RETURN IF(prevEffectiveDate = BLANK(), DATE(1900, 1, 1), prevEffectiveDate + 1)
+		dataType: dateTime
+		formatString: Short Date
+		lineageTag: 8cd0b9ac-bdde-4ec1-b121-9c00cd3307e3
+		summarizeBy: none
+		isDataTypeInferred
+
+		variation Variation
+			isDefault
+			relationship: b53971aa-2546-4758-afae-410a5f17531a
+			defaultHierarchy: LocalDateTable_8def90ec-8ed6-45d1-91ce-cabbcc786e68.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+	column Value
+		dataType: int64
+		formatString: 0
+		lineageTag: 037f8912-903d-48c9-887c-b1c32ea2a730
+		summarizeBy: sum
+		sourceColumn: Value
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Assets = m
+		mode: import
+		source =
+				let
+				    Source = Table.FromRows(Json.Document(Binary.Decompress(Binary.FromText("i45WMlTSAWPH4uLUEgUQyzmxJDU9v6gSzDEyNDDQNTAEIpA6A6VYnWglI1QtCv45KcjaQNJGBkYmCG2mYG3GIHG4NiMMLcg2GUG0mKBqQbfJGG6TCUSbBcSBppgOTC3C4kRjXQMzXSOQamOgxlgA", BinaryEncoding.Base64), Compression.Deflate)), let _t = ((type nullable text) meta [Serialized.Text = true]) in type table [RowID = _t, AssetID = _t, AssetName = _t, AssetCategory = _t, EffectiveTo = _t, Value = _t]),
+				    #"Changed Type" = Table.TransformColumnTypes(Source,{{"RowID", Int64.Type}, {"AssetID", Int64.Type}, {"AssetName", type text}, {"AssetCategory", type text}, {"EffectiveTo", type date}, {"Value", Int64.Type}})
+				in
+				    #"Changed Type"
+
+	annotation PBI_ResultType = Table
+
+	annotation PBI_NavigationStepName = Navigation
+

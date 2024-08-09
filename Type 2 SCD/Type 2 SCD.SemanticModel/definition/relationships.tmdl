@@ -1,0 +1,15 @@
+relationship d8a3937a-b1c7-48ef-b5f5-253e892d5252
+	joinOnDateBehavior: datePartOnly
+	fromColumn: Dates.Date
+	toColumn: LocalDateTable_ca4d9563-fd54-466e-b6c9-75e39cfb060c.Date
+
+relationship 488d0893-2c51-41a7-a0d5-659bf8813532
+	joinOnDateBehavior: datePartOnly
+	fromColumn: Assets.EffectiveTo
+	toColumn: LocalDateTable_5c1d33c1-6a0d-41c8-9805-bcaa4592ce96.Date
+
+relationship b53971aa-2546-4758-afae-410a5f17531a
+	joinOnDateBehavior: datePartOnly
+	fromColumn: Assets.EffectiveFrom
+	toColumn: LocalDateTable_8def90ec-8ed6-45d1-91ce-cabbcc786e68.Date
+
