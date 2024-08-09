@@ -1,0 +1,13 @@
+model Model
+	culture: en-GB
+
+annotation PBI_ProTooling = ["DevMode"]
+
+annotation PBIDesktopVersion = 2.130.930.0 (24.06)
+
+annotation __PBI_TimeIntelligenceEnabled = 0
+
+ref table Dates
+
+ref cultureInfo en-GB
+

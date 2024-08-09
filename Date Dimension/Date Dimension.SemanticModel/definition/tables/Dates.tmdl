@@ -1,0 +1,157 @@
+table Dates
+	lineageTag: 1cb7c9fa-5529-4dae-a56e-3d3a040a7773
+	dataCategory: Time
+
+	column Date
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: 52979da0-aeae-4abb-a259-753a64b334a4
+		summarizeBy: none
+		isNameInferred
+		isDataTypeInferred
+		sourceColumn: [Date]
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column DateKey = YEAR([Date]) * 10000 + MONTH([Date]) * 100 + DAY([Date])
+		dataType: int64
+		formatString: 0
+		lineageTag: ed72f7b8-701d-4f58-abe0-6e488cf2f976
+		summarizeBy: none
+		isDataTypeInferred
+
+		annotation SummarizationSetBy = User
+
+	column Day = ```
+			FORMAT(Dates[Date],"ddd") 
+			```
+		dataType: string
+		lineageTag: ca050524-84e5-4560-9def-40c60e63e423
+		summarizeBy: none
+		isDataTypeInferred
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Day Number' = ```
+			DAY(Dates[Date]) 
+			```
+		dataType: int64
+		formatString: 0
+		lineageTag: 6325f547-1fd3-421e-9219-afb0dee6e9f1
+		summarizeBy: none
+		isDataTypeInferred
+
+		annotation SummarizationSetBy = User
+
+	column Month = ```
+			FORMAT(Dates[Date],"MMM") 
+			```
+		dataType: string
+		lineageTag: 535a6991-d9ff-44ae-bf88-f71257004b0d
+		summarizeBy: none
+		isDataTypeInferred
+		sortByColumn: 'Month Number'
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Month Number' = MONTH(Dates[Date])
+		dataType: int64
+		formatString: 0
+		lineageTag: 50fcf7de-0466-4ac7-8a94-42c8d7a5cb3c
+		summarizeBy: none
+		isDataTypeInferred
+
+		annotation SummarizationSetBy = User
+
+	column Year = YEAR(Dates[Date])
+		dataType: int64
+		formatString: 0
+		lineageTag: 779c5e31-3e26-4e9d-b5cd-a49f46c2eaba
+		summarizeBy: sum
+		isDataTypeInferred
+
+		annotation SummarizationSetBy = Automatic
+
+	column Quarter = ```
+			"Q" & ROUNDUP(MONTH(Dates[Date])/3,0) 
+			```
+		dataType: string
+		lineageTag: 3ff18f6a-34cb-499c-9ad0-55857327d65b
+		summarizeBy: none
+		isDataTypeInferred
+
+		annotation SummarizationSetBy = Automatic
+
+	column Month-Year = Dates[Month] & "-" & FORMAT([Date], "YY")
+		dataType: string
+		lineageTag: aa2474e9-f462-438e-acdd-bb5030a697cb
+		summarizeBy: none
+		isDataTypeInferred
+		sortByColumn: 'Month-Year Number'
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Month-Year Number' = Dates[Year] * 100 + Dates[Month Number]
+		dataType: int64
+		formatString: 0
+		lineageTag: e4b30bc8-75f9-41ba-8b7d-f027e4ec77c3
+		summarizeBy: none
+		isDataTypeInferred
+
+		annotation SummarizationSetBy = User
+
+	column Quarter-Year = Dates[Quarter] & " " & Dates[Year]
+		dataType: string
+		lineageTag: 2847c6a9-6952-43f5-b123-04c3873d3bd4
+		summarizeBy: none
+		isDataTypeInferred
+		sortByColumn: 'Quarter-Year Number'
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Quarter-Year Number' = ```
+			YEAR(Dates[Date]) * 100 + ROUNDUP(MONTH(Dates[Date])/3,0) 
+			```
+		dataType: double
+		lineageTag: 78e01ff4-398d-4929-8e7c-6efc5773fc72
+		summarizeBy: sum
+		isDataTypeInferred
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	hierarchy 'Year-Quarter-Month Hierarchy'
+		lineageTag: 04e3b26a-793a-43cb-8cfc-53cc1828dd1e
+
+		level Year
+			lineageTag: 1665a6e1-4655-4bab-ac2e-6ad8d521a94a
+			column: Year
+
+		level Quarter-Year
+			lineageTag: 4289cb4e-dd78-46fb-86c9-15ad978cba1a
+			column: Quarter-Year
+
+		level Month-Year
+			lineageTag: 4f5b3279-92f8-468b-b487-44da923af465
+			column: Month-Year
+
+	hierarchy 'Year-Month Hierarchy'
+		lineageTag: 5aa77b3a-f4c4-4234-8a4f-9edcb39756f6
+
+		level Year
+			lineageTag: 9c8c645a-4f11-4b93-90ac-4f512898ec1e
+			column: Year
+
+		level Month
+			lineageTag: 2054c934-4161-48b9-8f9c-0768707a3a94
+			column: Month
+
+	partition Dates = calculated
+		mode: import
+		source = CALENDAR("2018-01-01", "2030-12-31")
+
+	annotation PBI_Id = d3b4f8b18b4d49fe88c2b7e69dee3a58
+
