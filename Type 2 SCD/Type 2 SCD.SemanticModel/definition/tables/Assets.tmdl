@@ -49,6 +49,15 @@ table Assets
 
 		annotation PBI_FormatHint = {"isGeneralNumber":true}
 
+	measure 'Is Current Category' =
+			
+			VAR assetId = SELECTEDVALUE(Assets[AssetID])
+			VAR effectiveDate = [Latest Effective Date]
+			VAR currentCategory = CALCULATE(MAX('Assets'[AssetCategory]), REMOVEFILTERS(Assets), AND('Assets'[EffectiveTo] = effectiveDate, Assets[AssetID] = assetId))
+			RETURN COUNTROWS(FILTER(Assets, AND('Assets'[AssetCategory] = currentCategory, Assets[AssetID] = assetId)))
+		formatString: 0
+		lineageTag: 169c59c2-0e6b-435e-be8c-0038f276e286
+
 	column RowID
 		dataType: int64
 		formatString: 0
