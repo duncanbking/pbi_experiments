@@ -1,0 +1,11 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "Report",
+    "displayName": "Toggle Bookmark"
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "f38c5b22-1e30-4268-a8b6-2cc0ec684b20"
+  }
+}
